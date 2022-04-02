@@ -6,7 +6,7 @@ import import_config
 
 
 def open_database(database_name: str):
-    crawl_config = import_config.CrawlConfig()
+    crawl_config = import_config.config
     try:
         db = pymysql.connect(host=crawl_config.mysql_host, user=crawl_config.mysql_user,
                              password=crawl_config.mysql_password, port=int(crawl_config.mysql_port),
