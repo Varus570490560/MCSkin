@@ -1,4 +1,5 @@
 import requests
+from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 from requests.adapters import HTTPAdapter
 from urllib3 import Retry
@@ -14,8 +15,12 @@ headers = {
 }
 
 
-def get_soup():
-    pass
+def get_soup(url: str, features: str='html.parser'):
+    response = session.get(url=url, headers=headers)
+    if response.status_code != 200:
+        raise Exception(f"Http response status code {response.status_code}.")
+    soup = BeautifulSoup(response.content, features=features)
+    return soup
 
 
 def get(url: str, download_mode: bool = False):

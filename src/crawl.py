@@ -27,5 +27,9 @@ def crawl_minecraftskinstealer():
         skin_count = skin_count + 30
 
 
+def crawl_plant_mc():
+    pass
+
+
 if __name__ == '__main__':
     crawl_minecraftskinstealer()
