@@ -4,4 +4,4 @@ import connect_database
 
 if __name__ == '__main__':
     this = minecraft_skin_lib.this
-    this.export(100)
+    this.set_in_use()

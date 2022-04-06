@@ -184,7 +184,7 @@ class MinecraftSkinLib:
             return 'alex'
 
     # This function for test, Please don't call this function.
-    def save_test(self, id: int, name: str, author: str, skin_image_url: str, description: str, data_source: str,
+    def __save_test(self, id: int, name: str, author: str, skin_image_url: str, description: str, data_source: str,
                   in_use: int, size: str, model: str, sha256: str, passageway: str):
         skin_information = {
             'name': name,
@@ -200,6 +200,17 @@ class MinecraftSkinLib:
             'passageway': passageway,
         }
         return connect_database.save(db=self.db, table_name='skin_lib', val=skin_information)
+
+    # This function for test, Please don't call this function.
+    def set_in_use(self):
+        skins = connect_database.execute_sql(db=self.db, sql="SELECT * FROM `mc_skin_reserve`;")
+        sha256_lst: list = list()
+        for skin in skins:
+            sha256 = connect_database.execute_sql(db=self.db, sql="SELECT sha256 FROM `skin` WHERE `skin_image_url` = %s", args=(skin[3],))
+            sha256_lst.append(sha256[0][0])
+        for sha256 in sha256_lst:
+            connect_database.execute_sql(db=self.db, sql="UPDATE `skin_lib` SET `in_use` = 1 WHERE `sha256` = %s;",
+                                         args=(sha256,))
 
 
 this: MinecraftSkinLib = MinecraftSkinLib()
