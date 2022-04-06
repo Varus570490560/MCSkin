@@ -22,13 +22,14 @@ class MinecraftSkinLib:
     def __del__(self):
         connect_database.close_database(db=self.db)
 
-    def export(self):
+    def export(self, skin_count: int):
         pass
 
     def submit_skin(self, source_skin_image_url: str, data_source: str, name: str = '', author: str = '',
                     description: str = '', model: str = ''):
         skin_id = self.__download_skin(source_skin_image_url=source_skin_image_url)
-        if model == '':
+        size: str = MinecraftSkinLib.__get_size(skin_id=skin_id)
+        if model == '' and size == '(64, 64)':
             model = MinecraftSkinLib.__get_model(skin_id=skin_id)
         if skin_id == 0:
             return False
@@ -40,7 +41,7 @@ class MinecraftSkinLib:
             'description': description,
             'data_source': data_source,
             'in_use': '0',
-            'size': MinecraftSkinLib.__get_size(skin_id=skin_id),
+            'size': size,
             'model': model,
             'sha256': MinecraftSkinLib.__get_sha256(skin_id=skin_id),
             'passageway': MinecraftSkinLib.__get_passageway(skin_id=skin_id),
