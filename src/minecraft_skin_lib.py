@@ -63,6 +63,10 @@ class MinecraftSkinLib:
                     description: str = '', model: str = ''):
         skin_id = self.__download_skin(source_skin_image_url=source_skin_image_url)
         size: str = MinecraftSkinLib.__get_size(skin_id=skin_id)
+        sha256 = MinecraftSkinLib.__get_sha256(skin_id=skin_id)
+        in_use: int = 0
+        if connect_database.execute_sql(db=self.db, sql="SELECT count(1) FROM `skin_lib` WHERE sha256 = %s", args=(sha256,))[0][0] >= 1:
+            in_use = 1
         if model == '' and size == '(64, 64)':
             model = MinecraftSkinLib.__get_model(skin_id=skin_id)
         if skin_id == 0:
@@ -74,10 +78,10 @@ class MinecraftSkinLib:
             'source_skin_image_url': source_skin_image_url,
             'description': description,
             'data_source': data_source,
-            'in_use': '0',
+            'in_use': in_use,
             'size': size,
             'model': model,
-            'sha256': MinecraftSkinLib.__get_sha256(skin_id=skin_id),
+            'sha256': sha256,
             'passageway': MinecraftSkinLib.__get_passageway(skin_id=skin_id),
         }
         return connect_database.save(db=self.db, table_name='skin_lib', val=skin_information,
@@ -202,8 +206,8 @@ class MinecraftSkinLib:
         return connect_database.save(db=self.db, table_name='skin_lib', val=skin_information)
 
     # This function for test, Please don't call this function.
-    def set_in_use(self):
-        skins = connect_database.execute_sql(db=self.db, sql="SELECT * FROM `mc_skin_reserve`;")
+    def __set_in_use(self):
+        skins = connect_database.execute_sql(db=self.db, sql="SELECT * FROM `mc_skin`;")
         sha256_lst: list = list()
         for skin in skins:
             sha256 = connect_database.execute_sql(db=self.db, sql="SELECT sha256 FROM `skin` WHERE `skin_image_url` = %s", args=(skin[3],))
