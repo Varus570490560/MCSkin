@@ -65,8 +65,9 @@ class MinecraftSkinLib:
         size: str = MinecraftSkinLib.__get_size(skin_id=skin_id)
         sha256 = MinecraftSkinLib.__get_sha256(skin_id=skin_id)
         in_use: int = 0
-        if connect_database.execute_sql(db=self.db, sql="SELECT count(1) FROM `skin_lib` WHERE sha256 = %s AND in_use = 1",
-                                        args=(sha256,))[0][0] >= 1:
+        if \
+                connect_database.execute_sql(db=self.db, sql="SELECT count(1) FROM `skin_lib` WHERE sha256 = %s AND in_use = 1",
+                                             args=(sha256,))[0][0] >= 1:
             in_use = 1
         if model == '' and size == '(64, 64)':
             model = MinecraftSkinLib.__get_model(skin_id=skin_id)
@@ -85,8 +86,26 @@ class MinecraftSkinLib:
             'sha256': sha256,
             'passageway': MinecraftSkinLib.__get_passageway(skin_id=skin_id),
         }
-        return connect_database.save(db=self.db, table_name='skin_lib', val=skin_information,
-                                     unique_keys=("source_skin_image_url",))
+        flag: bool = connect_database.save(db=self.db, table_name='skin_lib', val=skin_information, unique_keys=("source_skin_image_url",))
+        message =f"""
+        name: {name}
+        author: {author}
+        skin_image_url: {MinecraftSkinLib.__get_skin_image_url(skin_id=skin_id)}
+        source_skin_image_url: {source_skin_image_url}
+        description: {description}
+        data_source: {data_source}
+        in_use: {in_use}
+        size: {size}
+        model: {model}
+        sha256: {sha256}
+        passageway: {MinecraftSkinLib.__get_passageway(skin_id=skin_id)}
+        save: {flag}
+        """
+        MinecraftSkinLib.__robot_report(text=message)
+        if flag:
+            return True
+        else:
+            return False
 
     @staticmethod
     def __is_valid(file):
@@ -185,7 +204,7 @@ class MinecraftSkinLib:
             if MinecraftSkinLib.__get_passageway(skin_id=skin_id) != 'RGBA':
                 return ''
             for point in check_points:
-                if image.getpixel(point)[3] ==255:
+                if image.getpixel(point)[3] == 255:
                     return 'steve'
             return 'alex'
 
@@ -219,6 +238,14 @@ class MinecraftSkinLib:
         for sha256 in sha256_lst:
             connect_database.execute_sql(db=self.db, sql="UPDATE `skin_lib` SET `in_use` = 1 WHERE `sha256` = %s;",
                                          args=(sha256,))
+
+    @staticmethod
+    def __robot_report(text: str):
+        obj = {"msg_type": "text", "content": {"text": text}}
+        try:
+            http_request.session.post('https://open.feishu.cn/open-apis/bot/v2/hook/7062f6e2-665a-436f-94ca-c980b7386752', json=obj, timeout=10)
+        except Exception as e:
+            print(e)
 
 
 this: MinecraftSkinLib = MinecraftSkinLib()

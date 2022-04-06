@@ -1,3 +1,4 @@
+import bs4.element
 import requests
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
@@ -15,12 +16,19 @@ headers = {
 }
 
 
-def get_soup(url: str, features: str='html.parser'):
+class Response:
+    status_code: int
+    soup: bs4.element.Tag
+
+    def __init__(self, status_code: int, soup: bs4.element.Tag):
+        self.soup = soup
+        self.status_code = status_code
+
+
+def get_soup(url: str, features: str = 'html.parser'):
     response = session.get(url=url, headers=headers)
-    if response.status_code != 200:
-        raise Exception(f"Http response status code {response.status_code}.")
     soup = BeautifulSoup(response.content, features=features)
-    return soup
+    return Response(status_code=response.status_code, soup=soup)
 
 
 def get(url: str, download_mode: bool = False):
