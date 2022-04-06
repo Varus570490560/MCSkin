@@ -65,7 +65,8 @@ class MinecraftSkinLib:
         size: str = MinecraftSkinLib.__get_size(skin_id=skin_id)
         sha256 = MinecraftSkinLib.__get_sha256(skin_id=skin_id)
         in_use: int = 0
-        if connect_database.execute_sql(db=self.db, sql="SELECT count(1) FROM `skin_lib` WHERE sha256 = %s", args=(sha256,))[0][0] >= 1:
+        if connect_database.execute_sql(db=self.db, sql="SELECT count(1) FROM `skin_lib` WHERE sha256 = %s",
+                                        args=(sha256,))[0][0] >= 1:
             in_use = 1
         if model == '' and size == '(64, 64)':
             model = MinecraftSkinLib.__get_model(skin_id=skin_id)
@@ -181,15 +182,16 @@ class MinecraftSkinLib:
             (62, 60), (63, 60), (62, 61), (63, 61), (62, 62), (63, 62), (62, 63), (63, 63))
         picture_file_name = MinecraftSkinLib.__get_picture_name_by_id(skin_id=skin_id)
         with Image.open(picture_file_name) as image:
-            image_array = image.load()
+            if MinecraftSkinLib.__get_passageway(skin_id=skin_id) != 'RGBA':
+                return ''
             for point in check_points:
-                if image_array[point[0], point[1]][3] == 255:
+                if image.getpixel(point)[3] ==255:
                     return 'steve'
             return 'alex'
 
     # This function for test, Please don't call this function.
     def __save_test(self, id: int, name: str, author: str, skin_image_url: str, description: str, data_source: str,
-                  in_use: int, size: str, model: str, sha256: str, passageway: str):
+                    in_use: int, size: str, model: str, sha256: str, passageway: str):
         skin_information = {
             'name': name,
             'author': author,
@@ -210,7 +212,9 @@ class MinecraftSkinLib:
         skins = connect_database.execute_sql(db=self.db, sql="SELECT * FROM `mc_skin`;")
         sha256_lst: list = list()
         for skin in skins:
-            sha256 = connect_database.execute_sql(db=self.db, sql="SELECT sha256 FROM `skin` WHERE `skin_image_url` = %s", args=(skin[3],))
+            sha256 = connect_database.execute_sql(db=self.db,
+                                                  sql="SELECT sha256 FROM `skin` WHERE `skin_image_url` = %s",
+                                                  args=(skin[3],))
             sha256_lst.append(sha256[0][0])
         for sha256 in sha256_lst:
             connect_database.execute_sql(db=self.db, sql="UPDATE `skin_lib` SET `in_use` = 1 WHERE `sha256` = %s;",

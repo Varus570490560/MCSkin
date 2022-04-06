@@ -18,9 +18,9 @@ def get_soup():
     pass
 
 
-def get(url: str, download_mode: bool):
+def get(url: str, download_mode: bool = False):
     try:
-        response = session.get(url=url, stream=download_mode, headers=headers)
+        response = session.get(url=url, stream=download_mode, headers=headers, timeout=30)
     except Exception as e:
         print(e)
         return None
