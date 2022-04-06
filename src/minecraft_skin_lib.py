@@ -1,6 +1,7 @@
 import hashlib
 import hmac
 import os
+import random
 
 import pymysql
 from PIL import Image
@@ -23,7 +24,40 @@ class MinecraftSkinLib:
         connect_database.close_database(db=self.db)
 
     def export(self, skin_count: int):
-        pass
+        skins_lst = list(connect_database.execute_sql(db=self.db,
+                                                      sql="SELECT * FROM `skin_lib` WHERE `id` IN (SELECT min(`id`) FROM `skin` GROUP BY `sha256`)  AND `size` = '(64, 64)' AND `in_use` = 0"))
+        random.shuffle(skins_lst)
+        res = skins_lst[0:skin_count]
+        sha256_lst: list = list()
+        for data in res:
+            sha256_lst.append(data[10])
+        with open("../sql/export.sql", 'wb') as writer:
+            writer.write(
+                "INSERT INTO `mc_skin_reserve` (`name`, `author`, `skin_image_url`, `description`, `preview_image_url`) VALUES \n".encode())
+            i: int = 0
+            for skin in res:
+                author = skin[2]
+                if author is None:
+                    author = 'Anonymous'
+                else:
+                    author = MinecraftSkinLib.__transferred_meaning(skin[2])
+                skin_name = MinecraftSkinLib.__transferred_meaning(skin[1])
+                skin_image_url = MinecraftSkinLib.__transferred_meaning(skin[3])
+                description = MinecraftSkinLib.__transferred_meaning(skin[6])
+                writer.write(f"        ('{skin_name}', '{author}', '{skin_image_url}', '{description}','')".encode())
+                if i < skin_count - 1:
+                    writer.write(',\n'.encode())
+                i = i + 1
+            writer.write(';'.encode())
+        for sha256 in sha256_lst:
+            connect_database.execute_sql(db=self.db, sql="UPDATE `skin_lib` SET `in_use` = 1 WHERE `sha256` = %s;",
+                                         args=(sha256,))
+
+    @staticmethod
+    def __transferred_meaning(words: str):
+        if words is None:
+            return ""
+        return words.replace("'", "\\'")
 
     def submit_skin(self, source_skin_image_url: str, data_source: str, name: str = '', author: str = '',
                     description: str = '', model: str = ''):
@@ -148,6 +182,24 @@ class MinecraftSkinLib:
                 if image_array[point[0], point[1]][3] == 255:
                     return 'steve'
             return 'alex'
+
+    # This function for test, Please don't call this function.
+    def save_test(self, id: int, name: str, author: str, skin_image_url: str, description: str, data_source: str,
+                  in_use: int, size: str, model: str, sha256: str, passageway: str):
+        skin_information = {
+            'name': name,
+            'author': author,
+            'skin_image_url': skin_image_url,
+            'source_skin_image_url': '',
+            'description': description,
+            'data_source': data_source,
+            'in_use': in_use,
+            'size': size,
+            'model': model,
+            'sha256': sha256,
+            'passageway': passageway,
+        }
+        return connect_database.save(db=self.db, table_name='skin_lib', val=skin_information)
 
 
 this: MinecraftSkinLib = MinecraftSkinLib()
