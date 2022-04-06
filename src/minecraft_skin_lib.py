@@ -65,7 +65,7 @@ class MinecraftSkinLib:
         size: str = MinecraftSkinLib.__get_size(skin_id=skin_id)
         sha256 = MinecraftSkinLib.__get_sha256(skin_id=skin_id)
         in_use: int = 0
-        if connect_database.execute_sql(db=self.db, sql="SELECT count(1) FROM `skin_lib` WHERE sha256 = %s",
+        if connect_database.execute_sql(db=self.db, sql="SELECT count(1) FROM `skin_lib` WHERE sha256 = %s AND in_use = 1",
                                         args=(sha256,))[0][0] >= 1:
             in_use = 1
         if model == '' and size == '(64, 64)':
