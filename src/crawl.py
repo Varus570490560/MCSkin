@@ -7,7 +7,7 @@ import http_request
 
 def crawl_minecraftskinstealer():
     base_url = 'https://minecraft-statistic.net/en/skins/'
-    skin_count = 10050
+    skin_count = 16620
     while True:
         print(f"Page = {skin_count}")
         response = http_request.get(url=base_url + str(skin_count))

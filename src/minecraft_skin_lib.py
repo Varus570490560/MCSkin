@@ -2,13 +2,14 @@ import hashlib
 import hmac
 import os
 import random
-
 import pymysql
 from PIL import Image
 
 import http_request
 import import_config
-from CrawlProcess.src import connect_database
+import sys
+sys.path.append("../CrawlProcess/src")
+import connect_database
 
 
 class MinecraftSkinLib:
@@ -87,7 +88,7 @@ class MinecraftSkinLib:
             'passageway': MinecraftSkinLib.__get_passageway(skin_id=skin_id),
         }
         flag: bool = connect_database.save(db=self.db, table_name='skin_lib', val=skin_information, unique_keys=("source_skin_image_url",))
-        message =f"""
+        message = f"""
         name: {name}
         author: {author}
         skin_image_url: {MinecraftSkinLib.__get_skin_image_url(skin_id=skin_id)}
