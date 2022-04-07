@@ -62,6 +62,8 @@ class MinecraftSkinLib:
     def submit_skin(self, source_skin_image_url: str, data_source: str, name: str = '', author: str = '',
                     description: str = '', model: str = ''):
         skin_id = self.__download_skin(source_skin_image_url=source_skin_image_url)
+        if skin_id == 0:
+            return False
         size: str = MinecraftSkinLib.__get_size(skin_id=skin_id)
         sha256 = MinecraftSkinLib.__get_sha256(skin_id=skin_id)
         in_use: int = 0
@@ -71,8 +73,6 @@ class MinecraftSkinLib:
             in_use = 1
         if model == '' and size == '(64, 64)':
             model = MinecraftSkinLib.__get_model(skin_id=skin_id)
-        if skin_id == 0:
-            return False
         skin_information = {
             'name': name,
             'author': author,
