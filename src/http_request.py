@@ -1,3 +1,5 @@
+import time
+
 import bs4.element
 import requests
 from bs4 import BeautifulSoup
@@ -26,7 +28,13 @@ class Response:
 
 
 def get_soup(url: str, features: str = 'html.parser'):
-    response = session.get(url=url, headers=headers)
+    try:
+        response = session.get(url=url, headers=headers)
+    except Exception as e:
+        print(e)
+        print("There is a exception occurred. Let me have a rest.")
+        time.sleep(120)
+        return get_soup(url=url, features=features)
     soup = BeautifulSoup(response.content, features=features)
     return Response(status_code=response.status_code, soup=soup)
 
@@ -36,5 +44,7 @@ def get(url: str, download_mode: bool = False):
         response = session.get(url=url, stream=download_mode, headers=headers, timeout=30)
     except Exception as e:
         print(e)
-        return None
+        print("There is a exception occurred. Let me have a rest.")
+        time.sleep(120)
+        return get(url=url, download_mode=download_mode)
     return response

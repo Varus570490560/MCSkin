@@ -7,7 +7,7 @@ import http_request
 
 def crawl_minecraftskinstealer():
     base_url = 'https://minecraft-statistic.net/en/skins/'
-    skin_count = 4260
+    skin_count = 7890
     while True:
         print(f"Page = {skin_count}")
         response = http_request.get(url=base_url + str(skin_count))
@@ -36,6 +36,7 @@ def crawl_mcskin_top():
     base_url = 'https://mcskins.top'
     skin_page = 1
     while True:
+        print(f'Page :{skin_page}')
         if skin_page == 241:
             break
         soup: bs4.element.Tag = http_request.get_soup(url=base_url + '/page/' + str(skin_page)).soup
@@ -44,8 +45,9 @@ def crawl_mcskin_top():
             soup = http_request.get_soup(url=base_url + skin['href']).soup
             skin_name = soup.find(name='div', attrs='section download').div.b.text[9:]
             skin_image_url = base_url + soup.find(name='div', attrs='section download').a['href']
-            print(f"name = {skin_name} url = {skin_image_url}")
-            exit(1)
+            minecraft_skin_lib.this.submit_skin(source_skin_image_url=skin_image_url, data_source='MCskin_top', name=skin_name)
+            print(f"name: {skin_name} url:{skin_image_url}")
+        skin_page = skin_page + 1
 
 
 if __name__ == '__main__':
