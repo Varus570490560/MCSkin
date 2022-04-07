@@ -3,3 +3,6 @@
 
 # download resource
 skins/
+
+# apple
+.DS_Store

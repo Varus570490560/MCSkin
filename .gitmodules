@@ -1,0 +1,3 @@
+[submodule "CrawlProcess"]
+	path = CrawlProcess
+	url = git@github.com:Varus570490560/CrawlProcess.git

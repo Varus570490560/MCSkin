@@ -6,9 +6,9 @@ import random
 import pymysql
 from PIL import Image
 
-import connect_database
-import import_config
 import http_request
+import import_config
+from CrawlProcess.src import connect_database
 
 
 class MinecraftSkinLib:
