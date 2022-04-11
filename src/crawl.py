@@ -2,7 +2,7 @@ import bs4.element
 from bs4 import BeautifulSoup
 import minecraft_skin_lib
 
-import http_request
+import http_requests
 
 
 def crawl_minecraftskinstealer():
@@ -10,7 +10,7 @@ def crawl_minecraftskinstealer():
     skin_count = 0
     while True:
         print(f"Page = {skin_count}")
-        response = http_request.get(url=base_url + str(skin_count))
+        response = http_requests.get(url=base_url + str(skin_count))
         if response.status_code == 404:
             break
         soup = BeautifulSoup(response.content, 'lxml')
@@ -19,7 +19,7 @@ def crawl_minecraftskinstealer():
             url = skin.div.a['href']
             name = skin.div.div.strong.text
 
-            response = http_request.get(url=url)
+            response = http_requests.get(url=url)
             soup = BeautifulSoup(response.content, 'lxml')
             download_url = soup.find(name='a', attrs='btn btn-lg btn-primary btn-block m-b-25')['href']
             minecraft_skin_lib.this.submit_skin(source_skin_image_url=download_url, data_source='minecraftskinstealer',
@@ -39,10 +39,10 @@ def crawl_mcskin_top():
         print(f'Page :{skin_page}')
         if skin_page == 241:
             break
-        soup: bs4.element.Tag = http_request.get_soup(url=base_url + '/page/' + str(skin_page)).soup
+        soup: bs4.element.Tag = http_requests.get_soup(url=base_url + '/page/' + str(skin_page)).soup
         skins = soup.findAll(name='a', attrs='title-link')
         for skin in skins:
-            soup = http_request.get_soup(url=base_url + skin['href']).soup
+            soup = http_requests.get_soup(url=base_url + skin['href']).soup
             skin_name = soup.find(name='div', attrs='section download').div.b.text[9:]
             skin_image_url = base_url + soup.find(name='div', attrs='section download').a['href']
             minecraft_skin_lib.this.submit_skin(source_skin_image_url=skin_image_url, data_source='MCskin_top', name=skin_name)
@@ -55,13 +55,13 @@ def crawl_needcoolshoes():
     skin_page = 1
     while True:
         print(f'Page :{skin_page}')
-        soup = http_request.get_soup(url=base_url + str(skin_page)).soup
+        soup = http_requests.get_soup(url=base_url + str(skin_page)).soup
         skins = soup.findAll(name='div', attrs='skin-item')
         if len(skins) == 0:
             break
         for skin in skins:
             url = skin.div.a['href']
-            soup = http_request.get_soup(url=url).soup
+            soup = http_requests.get_soup(url=url).soup
             skin_image_url = soup.find(name='div', attrs='model checker-border')['data-save']
             skin_name = soup.find(name='h1', attrs={'itemprop': 'name'}).text
             skin_author = soup.find(name='a', attrs={'itemprop': 'author'}).text

@@ -4,11 +4,10 @@ import os
 import random
 import pymysql
 from PIL import Image
-
-import http_request
-import import_config
 import sys
 sys.path.append("../CrawlProcess/src")
+import http_requests
+import import_config
 import connect_database
 
 
@@ -140,7 +139,7 @@ class MinecraftSkinLib:
         skin_file_name = self.__get_picture_name_by_id(auto_increment)
         if not os.path.exists(skin_dir):
             os.makedirs(skin_dir)
-        response = http_request.get(url=source_skin_image_url, download_mode=True)
+        response = http_requests.get(url=source_skin_image_url, download_mode=True)
         if response.status_code != 200:
             print(f'Download fail! Get url = {source_skin_image_url} response status code = {response.status_code}.')
             return 0
@@ -244,7 +243,7 @@ class MinecraftSkinLib:
     def __robot_report(text: str):
         obj = {"msg_type": "text", "content": {"text": text}}
         try:
-            http_request.session.post('https://open.feishu.cn/open-apis/bot/v2/hook/7062f6e2-665a-436f-94ca-c980b7386752', json=obj, timeout=10)
+            http_requests.session.post('https://open.feishu.cn/open-apis/bot/v2/hook/7062f6e2-665a-436f-94ca-c980b7386752', json=obj, timeout=10)
         except Exception as e:
             print(e)
 
