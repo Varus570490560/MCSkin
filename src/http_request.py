@@ -29,7 +29,7 @@ class Response:
 
 def get_soup(url: str, features: str = 'html.parser'):
     try:
-        response = session.get(url=url, headers=headers)
+        response = session.get(url=url, headers=headers, timeout=30)
     except Exception as e:
         print(e)
         print("There is a exception occurred. Let me have a rest.")
