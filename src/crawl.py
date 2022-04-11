@@ -50,5 +50,25 @@ def crawl_mcskin_top():
         skin_page = skin_page + 1
 
 
+def crawl_needcoolshoes():
+    base_url: str = 'https://www.needcoolshoes.com/gallery?page='
+    skin_page = 1
+    while True:
+        print(f'Page :{skin_page}')
+        soup = http_request.get_soup(url=base_url + str(skin_page)).soup
+        skins = soup.findAll(name='div', attrs='skin-item')
+        if len(skins) == 0:
+            break
+        for skin in skins:
+            url = skin.div.a['href']
+            soup = http_request.get_soup(url=url).soup
+            skin_image_url = soup.find(name='div', attrs='model checker-border')['data-save']
+            skin_name = soup.find(name='h1', attrs={'itemprop': 'name'}).text
+            skin_author = soup.find(name='a', attrs={'itemprop': 'author'}).text
+            print(skin_name, skin_author, skin_image_url)
+            minecraft_skin_lib.this.submit_skin(source_skin_image_url=skin_image_url, data_source='needcoolshoes', author=skin_author, name=skin_name)
+        skin_page += 1
+
+
 if __name__ == '__main__':
-    crawl_mcskin_top()
+    crawl_needcoolshoes()
